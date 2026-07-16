@@ -20,7 +20,8 @@
 
 .app-header h1 {
   font-size: 1.4rem;
-  color: #4a90d9;
+  /* color: #4a90d9; */
+  color: red;
 }
 
 nav {
