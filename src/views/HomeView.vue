@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div v-if="store.error" class="error-message">
-      {{ store.error }}
-      <button @click="store.fetchTasks()">Tentar novamente</button>
-    </div>
+    <p v-if="store.error" class="error-message">{{ store.error }}</p>
 
     <TaskForm
       :editing-task="editingTask"
@@ -12,15 +9,13 @@
       @cancel="handleCancel"
     />
 
-    <input type="text" v-model="store.filterText" placeholder="Buscar..." />
-
     <p v-if="store.loading" class="loading-message">Carregando tarefas...</p>
 
     <template v-else>
       <section v-if="store.pendingTasks.length > 0">
         <h2 class="section-title">Pendentes ({{ store.pendingTasks.length }})</h2>
         <TaskItem
-          v-for="task in store.filteredPendingTasks"
+          v-for="task in store.pendingTasks"
           :key="task.id"
           :task="task"
           @toggle="handleToggle"
@@ -32,7 +27,7 @@
       <section v-if="store.completedTasks.length > 0">
         <h2 class="section-title">Concluídas ({{ store.completedTasks.length }})</h2>
         <TaskItem
-          v-for="task in store.filteredCompletedTasks"
+          v-for="task in store.completedTasks"
           :key="task.id"
           :task="task"
           @toggle="handleToggle"
@@ -68,8 +63,8 @@ function handleAdd(title) {
   store.addTask(title)
 }
 
-function handleUpdate(id, title) {
-  store.updateTaskTitle(id, title)
+function handleUpdate(id, title, imgAttachmentKey) {
+  store.updateTask(id, { title, imgAttachmentKey })
   editingTask.value = null
 }
 
@@ -120,11 +115,5 @@ function handleRemove(id) {
   color: #666;
   font-size: 0.9rem;
   padding: 8px 0;
-}
-
-input {
-  width: 100%;
-  font-size: 15px;
-  padding: 5px 10px;
 }
 </style>
