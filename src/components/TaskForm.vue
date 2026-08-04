@@ -39,7 +39,7 @@ const emit = defineEmits(['add', 'update', 'cancel']);
 
 const newTask = ref({
   title: '',
-  priority: 'normal',
+  priority: 'norma',
 });
 
 watch(
