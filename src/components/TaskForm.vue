@@ -6,7 +6,6 @@
       placeholder="Nova tarefa..."
       class="task-input"
     />
-    <label for="priority">Prioridade:</label>
     <select name="priority" id="priority" v-model="newTask.priority">
       <option value="baixa">Baixa</option>
       <option value="normal">Normal</option>

@@ -77,18 +77,21 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function updateTaskTitle(id, title) {
-    if (!title.trim()) return;
-    error.value = null;
-    try {
-      const response = await tasksApi.update(id, { title: title.trim() });
-      const index = tasks.value.findIndex((t) => t.id === id);
-      if (index !== -1) tasks.value[index] = response.data;
-    } catch (err) {
-      error.value = 'Erro ao editar tarefa.';
-      console.error(err);
-    }
+  async function updateTask(id, title, priority) {
+  if (!title.trim()) return;
+  error.value = null;
+  try {
+    const response = await tasksApi.update(id, { 
+      title: title.trim(), 
+      priority 
+    });
+    const index = tasks.value.findIndex((t) => t.id === id);
+    if (index !== -1) tasks.value[index] = response.data;
+  } catch (err) {
+    error.value = 'Erro ao editar tarefa.';
+    console.error(err);
   }
+} 
 
   return {
     tasks,
