@@ -10,11 +10,18 @@ export const useTasksStore = defineStore('tasks', () => {
 
   const pendingTasks = computed(() => tasks.value.filter((t) => !t.done));
   const completedTasks = computed(() => tasks.value.filter((t) => t.done));
-  const filteredTasks = computed (() => {
+  const filteredCompletedTasks = computed (() => {
     if(!filterText.value.trim()){
-        return tasks.value
+        return completedTasks.value
     }else{
-        return tasks.value.filter((t) => t.title.toLowerCase().includes(filterText.value.toLowerCase()))
+        return completedTasks.value.filter((t) => t.title.toLowerCase().includes(filterText.value.toLowerCase()))
+    }
+  })
+    const filteredPendingTasks = computed (() => {
+    if(!filterText.value.trim()){
+        return pendingTasks.value
+    }else{
+        return pendingTasks.value.filter((t) => t.title.toLowerCase().includes(filterText.value.toLowerCase()))
     }
   })
 
@@ -23,6 +30,7 @@ export const useTasksStore = defineStore('tasks', () => {
     error.value = null;
     try {
       const response = await tasksApi.getAll();
+      console.log('BLABLABLA: '+response.data)
       tasks.value = response.data;
     } catch (err) {
       error.value = 'Erro ao carregar tarefas.';
@@ -88,6 +96,9 @@ export const useTasksStore = defineStore('tasks', () => {
     error,
     pendingTasks,
     completedTasks,
+    filteredPendingTasks,
+    filteredCompletedTasks,
+    filterText,
     fetchTasks,
     addTask,
     toggleTask,

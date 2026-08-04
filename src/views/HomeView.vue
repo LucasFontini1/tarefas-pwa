@@ -1,6 +1,9 @@
 <template>
   <div>
-    <p v-if="store.error" class="error-message">{{ store.error }}</p>
+    <div v-if="store.error" class="error-message">
+      {{ store.error }}
+      <button @click="store.fetchTasks()">Tentar novamente</button>
+    </div>
 
     <TaskForm
       :editing-task="editingTask"
@@ -9,15 +12,15 @@
       @cancel="handleCancel"
     />
 
+    <input type="text" v-model="store.filterText" placeholder="Buscar..." />
+
     <p v-if="store.loading" class="loading-message">Carregando tarefas...</p>
 
     <template v-else>
       <section v-if="store.pendingTasks.length > 0">
-        <h2 class="section-title">
-          Pendentes ({{ store.pendingTasks.length }})
-        </h2>
+        <h2 class="section-title">Pendentes ({{ store.pendingTasks.length }})</h2>
         <TaskItem
-          v-for="task in store.pendingTasks"
+          v-for="task in store.filteredPendingTasks"
           :key="task.id"
           :task="task"
           @toggle="handleToggle"
@@ -27,11 +30,9 @@
       </section>
 
       <section v-if="store.completedTasks.length > 0">
-        <h2 class="section-title">
-          Concluídas ({{ store.completedTasks.length }})
-        </h2>
+        <h2 class="section-title">Concluídas ({{ store.completedTasks.length }})</h2>
         <TaskItem
-          v-for="task in store.completedTasks"
+          v-for="task in store.filteredCompletedTasks"
           :key="task.id"
           :task="task"
           @toggle="handleToggle"
@@ -50,43 +51,43 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import TaskForm from '../components/TaskForm.vue';
-import TaskItem from '../components/TaskItem.vue';
-import InstallButton from '../components/InstallButton.vue';
-import { useTasksStore } from '../stores/tasks.js';
+import { onMounted, ref } from 'vue'
+import TaskForm from '../components/TaskForm.vue'
+import TaskItem from '../components/TaskItem.vue'
+import InstallButton from '../components/InstallButton.vue'
+import { useTasksStore } from '../stores/tasks.js'
 
-const store = useTasksStore();
-const editingTask = ref(null);
+const store = useTasksStore()
+const editingTask = ref(null)
 
 onMounted(() => {
-  store.fetchTasks();
-});
+  store.fetchTasks()
+})
 
 function handleAdd(title) {
-  store.addTask(title);
+  store.addTask(title)
 }
 
 function handleUpdate(id, title) {
-  store.updateTaskTitle(id, title);
-  editingTask.value = null;
+  store.updateTaskTitle(id, title)
+  editingTask.value = null
 }
 
 function handleCancel() {
-  editingTask.value = null;
+  editingTask.value = null
 }
 
 function handleEdit(task) {
-  editingTask.value = task;
+  editingTask.value = task
 }
 
 function handleToggle(id) {
-  store.toggleTask(id);
+  store.toggleTask(id)
 }
 
 function handleRemove(id) {
-  if (editingTask.value?.id === id) editingTask.value = null;
-  store.removeTask(id);
+  if (editingTask.value?.id === id) editingTask.value = null
+  store.removeTask(id)
 }
 </script>
 
@@ -119,5 +120,11 @@ function handleRemove(id) {
   color: #666;
   font-size: 0.9rem;
   padding: 8px 0;
+}
+
+input {
+  width: 100%;
+  font-size: 15px;
+  padding: 5px 10px;
 }
 </style>
