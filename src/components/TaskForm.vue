@@ -1,11 +1,17 @@
 <template>
   <form class="task-form" @submit.prevent="handleSubmit">
     <input
-      v-model="newTask"
+      v-model="newTask.title"
       type="text"
       placeholder="Nova tarefa..."
       class="task-input"
     />
+    <label for="priority">Prioridade:</label>
+    <select name="priority" id="priority" v-model="newTask.priority">
+      <option value="baixa">Baixa</option>
+      <option value="normal">Normal</option>
+      <option value="alta">Alta</option>
+    </select>
     <button type="submit" class="task-button">
       {{ editingTask ? 'Alterar' : 'Adicionar' }}
     </button>
@@ -31,28 +37,49 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['add', 'update', 'cancel']);
-const newTask = ref('');
+
+const newTask = ref({
+  title: '',
+  priority: 'normal',
+});
 
 watch(
   () => props.editingTask,
   (task) => {
-    newTask.value = task ? task.title : '';
+    if (task) {
+      newTask.value = {
+        title: task.title,
+        priority: task.priority || 'normal',
+      };
+    } else {
+      resetForm();
+    }
   },
+  { immediate: true }
 );
 
 function handleSubmit() {
-  if (!newTask.value.trim()) return;
+  if (!newTask.value.title.trim()) return;
+
   if (props.editingTask) {
-    emit('update', props.editingTask.id, newTask.value.trim());
+    emit('update', props.editingTask.id, newTask.value.title.trim(), newTask.value.priority);
   } else {
-    emit('add', newTask.value.trim());
+    emit('add', newTask.value.title.trim(), newTask.value.priority);
   }
-  newTask.value = '';
+  
+  resetForm();
 }
 
 function handleCancel() {
-  newTask.value = '';
+  resetForm();
   emit('cancel');
+}
+
+function resetForm() {
+  newTask.value = {
+    title: '',
+    priority: 'normal',
+  };
 }
 </script>
 
@@ -60,6 +87,7 @@ function handleCancel() {
 .task-form {
   display: flex;
   gap: 8px;
+  align-items: center;
   margin-bottom: 24px;
 }
 
@@ -75,6 +103,15 @@ function handleCancel() {
 
 .task-input:focus {
   border-color: #4a90d9;
+}
+
+select {
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+  cursor: pointer;
 }
 
 .task-button {
