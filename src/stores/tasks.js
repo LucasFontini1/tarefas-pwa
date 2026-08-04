@@ -106,6 +106,6 @@ export const useTasksStore = defineStore('tasks', () => {
     addTask,
     toggleTask,
     removeTask,
-    updateTaskTitle,
+    updateTask,
   };
 });
