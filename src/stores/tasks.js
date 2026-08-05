@@ -24,11 +24,20 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function addTask(title) {
-    if (!title.trim()) return
+  async function addTask(payload) {
+    const titleText = typeof payload === 'string' ? payload : payload?.title
+    if (!titleText || typeof titleText !== 'string' || !titleText.trim()) return
+
     error.value = null
     try {
-      const response = await tasksApi.create(title.trim())
+      const body = typeof payload === 'string' 
+        ? { title: payload.trim() } 
+        : {
+            title: payload.title.trim(),
+            img_attachment_key: payload.img_attachment_key || payload.imgAttachmentKey || null
+          }
+
+      const response = await tasksApi.create(body)
       tasks.value.push(response.data)
     } catch (err) {
       error.value = 'Erro ao adicionar tarefa.'
@@ -61,14 +70,22 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function updateTask(id, { title, imgAttachmentKey } = {}) {
-    if (title !== undefined && !title.trim()) return
+  async function updateTask(id, payload = {}) {
     error.value = null
-    const payload = {}
-    if (title !== undefined) payload.title = title.trim()
-    if (imgAttachmentKey != null) payload.img_attachment_key = imgAttachmentKey
+    
+    const body = {}
+    
+    if (typeof payload.title === 'string' && payload.title.trim()) {
+      body.title = payload.title.trim()
+    }
+    
+    const key = payload.img_attachment_key ?? payload.imgAttachmentKey
+    if (key !== undefined) {
+      body.img_attachment_key = key
+    }
+
     try {
-      const response = await tasksApi.update(id, payload)
+      const response = await tasksApi.update(id, body)
       const index = tasks.value.findIndex((t) => t.id === id)
       if (index !== -1) tasks.value[index] = response.data
     } catch (err) {
