@@ -10,6 +10,9 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'prompt',
+      strategies: 'injectManifest',  
+      srcDir: 'src',                
+      filename: 'sw.js',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         cleanupOutdatedCaches: true,
@@ -93,6 +96,7 @@ export default defineConfig({
       },
       devOptions: {
         enabled: true,
+        type: 'module',
       },
     }),
     vueDevTools(),
